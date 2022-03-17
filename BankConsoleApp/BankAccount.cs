@@ -25,22 +25,19 @@ namespace BankConsoleApp
             }
         }
 
-
+        private readonly decimal _minimumBalance;
         private static int accountNumberSeed = 1234567890;
-
-        public BankAccount(string name, decimal initialBalance)
+        public BankAccount(string name, decimal initialBalance) : this(name, initialBalance, 0) { }
+        public BankAccount(string name, decimal initialBalance, decimal minimumBalance)
         {
             Number = accountNumberSeed.ToString();
             accountNumberSeed++;
             Owner = name;
-            MakeDeposit(initialBalance, DateTime.Now, "Initial balance");
+            _minimumBalance = minimumBalance;
+            if (initialBalance > 0)
+                MakeDeposit(initialBalance, DateTime.Now, "Initial balance");
         }
-
-
-
         private List<Transaction> allTransactions = new List<Transaction>();
-
-
 
         public void MakeDeposit(decimal amount, DateTime date, string note)
         {
@@ -58,7 +55,7 @@ namespace BankConsoleApp
             {
                 throw new ArgumentOutOfRangeException(nameof(amount), "Amount of withdrawal must be positive");
             }
-            if (Balance - amount < 0)
+            if (Balance - amount < _minimumBalance)
             {
                 throw new InvalidOperationException("Not sufficient funds for this withdrawal");
             }
